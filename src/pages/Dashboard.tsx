@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Heart, 
-  MessageCircle, 
   Eye, 
   Settings, 
   User, 
@@ -123,10 +122,6 @@ const Dashboard = () => {
                   <Link to="/matches" className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors">
                     <Heart className="h-5 w-5 text-primary" />
                     <span className="font-medium">Matches</span>
-                  </Link>
-                  <Link to="/messages" className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors">
-                    <MessageCircle className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Messages</span>
                   </Link>
                   <Link to="/settings" className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors">
                     <Settings className="h-5 w-5 text-primary" />

@@ -37,7 +37,6 @@ const Settings = () => {
   // Notification Settings
   const [notifications, setNotifications] = useState({
     newMatches: true,
-    messages: true,
     profileViews: true,
     interests: true,
     email: true,
@@ -172,21 +171,6 @@ const Settings = () => {
                       checked={notifications.newMatches}
                       onCheckedChange={(checked) =>
                         setNotifications({ ...notifications, newMatches: checked })
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Messages</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Get notified when you receive new messages
-                      </p>
-                    </div>
-                    <Switch
-                      checked={notifications.messages}
-                      onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, messages: checked })
                       }
                     />
                   </div>

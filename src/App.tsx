@@ -18,7 +18,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import ProfileEdit from "./pages/ProfileEdit";
 import Matches from "./pages/Matches";
-import Messages from "./pages/Messages";
 import Settings from "./pages/Settings";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
@@ -89,14 +88,6 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Matches />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/messages" 
-                element={
-                  <ProtectedRoute>
-                    <Messages />
                   </ProtectedRoute>
                 } 
               />
