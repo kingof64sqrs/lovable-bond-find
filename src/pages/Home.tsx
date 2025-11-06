@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Heart, Shield, Users, CheckCircle, Search, MessageCircle, Star } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import heroImage from "@/assets/hero-couple.jpg";
@@ -10,6 +11,8 @@ import verifiedIcon from "@/assets/verified-icon.png";
 import matchIcon from "@/assets/match-icon.png";
 
 const Home = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -30,16 +33,33 @@ const Home = () => {
                 Join India's most trusted matrimony platform. Over 10 lakh+ verified profiles waiting to meet you.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/register">
-                  <Button size="lg" className="gradient-accent shadow-elegant">
-                    Register Free
-                  </Button>
-                </Link>
-                <Link to="/search">
-                  <Button size="lg" variant="outline">
-                    Browse Profiles
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/dashboard">
+                      <Button size="lg" className="gradient-accent shadow-elegant">
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                    <Link to="/search">
+                      <Button size="lg" variant="outline">
+                        Find Matches
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/register">
+                      <Button size="lg" className="gradient-accent shadow-elegant">
+                        Register Free
+                      </Button>
+                    </Link>
+                    <Link to="/search">
+                      <Button size="lg" variant="outline">
+                        Browse Profiles
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-8 pt-4">
                 <div>
@@ -180,15 +200,28 @@ const Home = () => {
         <div className="container">
           <Card className="gradient-accent border-none text-white shadow-elegant">
             <CardContent className="py-12 text-center space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">Ready to Find Your Life Partner?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                {isAuthenticated ? "Continue Your Search!" : "Ready to Find Your Life Partner?"}
+              </h2>
               <p className="text-white/90 max-w-2xl mx-auto">
-                Join thousands of happy couples who found their perfect match on Lovable
+                {isAuthenticated 
+                  ? "Explore more profiles and find your perfect match today"
+                  : "Join thousands of happy couples who found their perfect match on Lovable"
+                }
               </p>
-              <Link to="/register">
-                <Button size="lg" variant="secondary" className="shadow-soft">
-                  Create Free Profile
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/search">
+                  <Button size="lg" variant="secondary" className="shadow-soft">
+                    Find More Matches
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/register">
+                  <Button size="lg" variant="secondary" className="shadow-soft">
+                    Create Free Profile
+                  </Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         </div>

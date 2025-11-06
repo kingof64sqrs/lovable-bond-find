@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 
 const Register = () => {
@@ -20,20 +21,28 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { register } = useAuth();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate registration - will be replaced with actual authentication
-    setTimeout(() => {
+    try {
+      await register(formData);
       toast({
         title: "Registration successful!",
         description: "Welcome to Lovable. Let's complete your profile.",
       });
-      setIsLoading(false);
       navigate("/create-profile");
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Registration failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
