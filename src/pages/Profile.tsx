@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Heart,
-  MessageCircle,
   Share2,
   MapPin,
   Briefcase,
@@ -66,13 +65,6 @@ const Profile = () => {
     });
   };
 
-  const handleMessage = () => {
-    toast({
-      title: "Premium Feature",
-      description: "Upgrade to premium to send messages.",
-    });
-  };
-
   const handleShare = () => {
     toast({
       title: "Profile Link Copied!",
@@ -122,10 +114,6 @@ const Profile = () => {
                     <Button className="w-full gradient-accent gap-2" onClick={handleConnect}>
                       <Heart className="h-4 w-4" />
                       Send Interest
-                    </Button>
-                    <Button variant="outline" className="w-full gap-2" onClick={handleMessage}>
-                      <MessageCircle className="h-4 w-4" />
-                      Send Message
                     </Button>
                     <Button variant="ghost" className="w-full gap-2" onClick={handleShare}>
                       <Share2 className="h-4 w-4" />

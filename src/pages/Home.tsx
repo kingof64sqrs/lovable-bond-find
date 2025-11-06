@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Heart, Shield, Users, CheckCircle, Search, MessageCircle, Star } from "lucide-react";
+import { Heart, Shield, Users, CheckCircle, Search, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -148,8 +148,8 @@ const Home = () => {
             {[
               { icon: Users, title: "Register Free", desc: "Create your profile in minutes" },
               { icon: Search, title: "Search Matches", desc: "Browse verified profiles" },
-              { icon: MessageCircle, title: "Connect", desc: "Chat with matches" },
-              { icon: Heart, title: "Find Love", desc: "Meet your perfect match" }
+              { icon: Heart, title: "Send Interest", desc: "Connect with matches" },
+              { icon: CheckCircle, title: "Find Love", desc: "Meet your perfect match" }
             ].map((step, idx) => (
               <div key={idx} className="text-center space-y-4">
                 <div className="w-16 h-16 mx-auto rounded-full gradient-accent flex items-center justify-center text-white">

@@ -367,7 +367,7 @@ const Search = () => {
                 <MapPin className="h-5 w-5 text-primary mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Connect with Matches</p>
-                  <p className="text-xs text-muted-foreground">Send interests and messages</p>
+                  <p className="text-xs text-muted-foreground">Send interests to connect</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">

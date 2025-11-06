@@ -12,7 +12,6 @@ import {
   MapPin,
   Briefcase,
   GraduationCap,
-  MessageCircle,
   Filter,
   Star,
   ArrowLeft
