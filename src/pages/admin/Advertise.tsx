@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,31 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Advertise = () => {
-  const [ads, setAds] = useState([
-    { id: 1, title: "Premium Membership", url: "http://example.com", startDate: "2024-01-01", endDate: "2024-02-01" },
-    { id: 2, title: "Success Stories", url: "http://example.com", startDate: "2024-01-15", endDate: "2024-03-15" },
-  ]);
+  const { toast } = useToast();
+  const [ads, setAds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAds();
+  }, []);
+
+  const fetchAds = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/advertisements', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setAds(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch advertisements', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [newAd, setNewAd] = useState({
     title: "",
@@ -20,15 +39,46 @@ const Advertise = () => {
     endDate: "",
   });
 
-  const handleAddAd = () => {
-    if (newAd.title && newAd.url) {
-      setAds([...ads, { id: ads.length + 1, ...newAd }]);
-      setNewAd({ title: "", url: "", startDate: "", endDate: "" });
+  const handleAddAd = async () => {
+    if (!newAd.title || !newAd.url) {
+      toast({ title: 'Validation Error', description: 'Title and URL are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/advertisements', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newAd)
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Advertisement created successfully' });
+        fetchAds();
+        setNewAd({ title: "", url: "", startDate: "", endDate: "" });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create advertisement', variant: 'destructive' });
     }
   };
 
-  const handleDeleteAd = (id: number) => {
-    setAds(ads.filter(ad => ad.id !== id));
+  const handleDeleteAd = async (id: string) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/Advertisements/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Advertisement deleted successfully' });
+        fetchAds();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete advertisement', variant: 'destructive' });
+    }
   };
 
   return (
@@ -93,7 +143,15 @@ const Advertise = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {ads.map((ad) => (
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8">Loading...</TableCell>
+                      </TableRow>
+                    ) : ads.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No advertisements found</TableCell>
+                      </TableRow>
+                    ) : ads.map((ad) => (
                       <TableRow key={ad.id}>
                         <TableCell className="font-medium">{ad.title}</TableCell>
                         <TableCell>{ad.url}</TableCell>

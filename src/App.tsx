@@ -67,6 +67,14 @@ import Star from "./pages/admin/Star";
 import Rasi from "./pages/admin/Rasi";
 import Dosh from "./pages/admin/Dosh";
 import AnnualIncome from "./pages/admin/AnnualIncome";
+
+// User Activity Imports
+import ExpressInterest from "./pages/admin/user-activity/ExpressInterest";
+import Message from "./pages/admin/user-activity/Message";
+import ViewedProfile from "./pages/admin/user-activity/ViewedProfile";
+import BlockedProfile from "./pages/admin/user-activity/BlockedProfile";
+import ShortlistedProfile from "./pages/admin/user-activity/ShortlistedProfile";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -455,6 +463,46 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <UserActivity />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-activity/express-interest" 
+                element={
+                  <ProtectedRoute>
+                    <ExpressInterest />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-activity/message" 
+                element={
+                  <ProtectedRoute>
+                    <Message />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-activity/viewed-profile" 
+                element={
+                  <ProtectedRoute>
+                    <ViewedProfile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-activity/blocked-profile" 
+                element={
+                  <ProtectedRoute>
+                    <BlockedProfile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/user-activity/shortlisted-profile" 
+                element={
+                  <ProtectedRoute>
+                    <ShortlistedProfile />
                   </ProtectedRoute>
                 } 
               />

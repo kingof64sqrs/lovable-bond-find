@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,15 +6,39 @@ import { Label } from "@/components/ui/label";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PaymentOption = () => {
+  const { toast } = useToast();
   const [payments, setPayments] = useState({
-    stripeKey: "sk_test_xxxxx",
-    paypalEmail: "admin@paypal.com",
-    razorpayKey: "key_test_xxxxx",
-    bankTransfer: true,
-    upiEnabled: true,
+    stripeKey: "",
+    paypalEmail: "",
+    razorpayKey: "",
+    bankTransfer: false,
+    upiEnabled: false,
   });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchPaymentOptions();
+  }, []);
+
+  const fetchPaymentOptions = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/payment-options', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success && result.data && result.data.length > 0) {
+        setPayments(result.data[0]);
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch payment options', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -24,9 +48,23 @@ const PaymentOption = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Payment options saved:", payments);
-    alert("Payment options saved successfully!");
+  const handleSave = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/payment-options', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payments)
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Payment options saved successfully' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save payment options', variant: 'destructive' });
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,13 +6,31 @@ import { Label } from "@/components/ui/label";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const MembershipPlan = () => {
-  const [plans, setPlans] = useState([
-    { id: 1, name: "Free", price: "₹0", features: ["Create Profile", "View 10 Profiles"] },
-    { id: 2, name: "Gold", price: "₹2,999", features: ["Unlimited Views", "50 Interests/month"] },
-    { id: 3, name: "Diamond", price: "₹5,999", features: ["Everything + Premium Chat"] },
-  ]);
+  const { toast } = useToast();
+  const [plans, setPlans] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/membership-plans', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setPlans(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch plans', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [newPlan, setNewPlan] = useState({
     name: "",
@@ -20,15 +38,32 @@ const MembershipPlan = () => {
     features: "",
   });
 
-  const handleAddPlan = () => {
-    if (newPlan.name && newPlan.price) {
-      setPlans([...plans, {
-        id: plans.length + 1,
-        name: newPlan.name,
-        price: newPlan.price,
-        features: newPlan.features.split(",").map(f => f.trim()),
-      }]);
-      setNewPlan({ name: "", price: "", features: "" });
+  const handleAddPlan = async () => {
+    if (!newPlan.name || !newPlan.price) {
+      toast({ title: 'Validation Error', description: 'All fields are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/membership-plans', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: newPlan.name,
+          price: newPlan.price,
+          features: newPlan.features.split(",").map(f => f.trim())
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Plan created successfully' });
+        fetchPlans();
+        setNewPlan({ name: "", price: "", features: "" });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create plan', variant: 'destructive' });
     }
   };
 
@@ -45,7 +80,12 @@ const MembershipPlan = () => {
           </header>
 
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {loading ? (
+              <div className="text-center py-8">Loading plans...</div>
+            ) : plans.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No membership plans found</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {plans.map(plan => (
                 <Card key={plan.id}>
                   <CardHeader>
@@ -62,7 +102,8 @@ const MembershipPlan = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+            )}
 
             <Card>
               <CardHeader>

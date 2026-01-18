@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,20 +7,38 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Search, Eye, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Members = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [members, setMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const members = [
-    { id: 1, name: "Priya Sharma", email: "priya@example.com", joinDate: "2024-01-15", status: "active", plan: "Gold" },
-    { id: 2, name: "Rahul Kumar", email: "rahul@example.com", joinDate: "2024-02-20", status: "active", plan: "Free" },
-    { id: 3, name: "Ananya Patel", email: "ananya@example.com", joinDate: "2024-01-08", status: "inactive", plan: "Diamond" },
-    { id: 4, name: "Vikram Singh", email: "vikram@example.com", joinDate: "2024-02-10", status: "active", plan: "Gold" },
-  ];
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/members', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        setMembers(result.data);
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch members', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered = members.filter(m =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.email.toLowerCase().includes(searchQuery.toLowerCase())
+    m.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

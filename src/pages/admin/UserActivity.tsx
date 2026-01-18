@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -6,14 +6,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const UserActivity = () => {
-  const [activities] = useState([
-    { id: 1, userName: "Priya Sharma", action: "Profile View", details: "Viewed 5 profiles", timestamp: "2024-01-15 10:30 AM" },
-    { id: 2, userName: "Rahul Kumar", action: "Interest Sent", details: "Sent interest to 2 profiles", timestamp: "2024-01-15 09:15 AM" },
-    { id: 3, userName: "Ananya Patel", action: "Profile Update", details: "Updated profile information", timestamp: "2024-01-15 08:45 AM" },
-    { id: 4, userName: "Vikram Singh", action: "Login", details: "Logged in successfully", timestamp: "2024-01-15 07:30 AM" },
-  ]);
+  const { toast } = useToast();
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/user-activity', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setActivities(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch activities', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SidebarProvider>

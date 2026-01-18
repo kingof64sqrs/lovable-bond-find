@@ -63,6 +63,10 @@ router.post('/membership-plans', adminController.createMembershipPlan);
 // Approvals Routes
 router.get('/approvals', adminController.getApprovals);
 
+// Advertisements Routes
+router.get('/advertisements', adminController.getAdvertisements);
+router.post('/advertisements', adminController.createAdvertisement);
+
 // User Activity Routes
 router.get('/user-activity', adminController.getUserActivity);
 
@@ -82,6 +86,7 @@ router.get('/member-report', adminController.getMemberReport);
 
 // Payment Options Routes
 router.get('/payment-options', adminController.getPaymentOptions);
+router.post('/payment-options', adminController.createPaymentOption);
 
 // Delete Route
 router.delete('/:className/:id', adminController.deleteItem);

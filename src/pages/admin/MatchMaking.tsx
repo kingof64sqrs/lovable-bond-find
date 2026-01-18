@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -6,14 +6,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import AdminSidebar from "@/components/AdminSidebar";
 import { CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const MatchMaking = () => {
-  const [matches] = useState([
-    { id: 1, user1: "Priya Sharma", user2: "Rahul Kumar", matchScore: "92%", matchedAt: "2024-01-15", status: "active" },
-    { id: 2, user1: "Ananya Patel", user2: "Vikram Singh", matchScore: "88%", matchedAt: "2024-02-20", status: "active" },
-    { id: 3, user1: "Sneha Reddy", user2: "Arjun Mehta", matchScore: "78%", matchedAt: "2024-01-08", status: "inactive" },
-    { id: 4, user1: "Neha Singh", user2: "Deepak Kumar", matchScore: "85%", matchedAt: "2024-02-10", status: "active" },
-  ]);
+  const { toast } = useToast();
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchMatches();
+  }, []);
+
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/matches', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setMatches(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch matches', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SidebarProvider>

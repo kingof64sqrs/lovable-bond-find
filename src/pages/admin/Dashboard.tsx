@@ -13,12 +13,55 @@ import {
   ArrowDownRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const AdminDashboard = () => {
+  const [members, setMembers] = useState<any[]>([]);
+  const [approvals, setApprovals] = useState<any[]>([]);
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      
+      const [membersRes, approvalsRes, matchesRes] = await Promise.all([
+        fetch('http://localhost:3000/api/admin/members', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('http://localhost:3000/api/admin/approvals', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('http://localhost:3000/api/admin/matches', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ]);
+
+      const [membersData, approvalsData, matchesData] = await Promise.all([
+        membersRes.json(),
+        approvalsRes.json(),
+        matchesRes.json()
+      ]);
+
+      if (membersData.success) setMembers(membersData.data || []);
+      if (approvalsData.success) setApprovals(approvalsData.data || []);
+      if (matchesData.success) setMatches(matchesData.data || []);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const stats = [
     {
       title: "Total Users",
-      value: "10,234",
+      value: members.length.toString(),
       change: "+12.5%",
       trend: "up",
       icon: Users,
@@ -26,7 +69,7 @@ const AdminDashboard = () => {
     },
     {
       title: "Active Subscriptions",
-      value: "3,456",
+      value: members.filter((m: any) => m.status === 'active').length.toString(),
       change: "+8.2%",
       trend: "up",
       icon: DollarSign,
@@ -34,7 +77,7 @@ const AdminDashboard = () => {
     },
     {
       title: "Pending Verifications",
-      value: "145",
+      value: approvals.filter((a: any) => a.status === 'pending').length.toString(),
       change: "-5.1%",
       trend: "down",
       icon: UserCheck,
@@ -42,7 +85,7 @@ const AdminDashboard = () => {
     },
     {
       title: "Successful Matches",
-      value: "5,234",
+      value: matches.length.toString(),
       change: "+15.3%",
       trend: "up",
       icon: Heart,
@@ -50,18 +93,21 @@ const AdminDashboard = () => {
     },
   ];
 
-  const recentUsers = [
-    { id: 1, name: "Priya Sharma", email: "priya@example.com", status: "pending", joined: "2 hours ago" },
-    { id: 2, name: "Rahul Kumar", email: "rahul@example.com", status: "verified", joined: "5 hours ago" },
-    { id: 3, name: "Ananya Patel", email: "ananya@example.com", status: "pending", joined: "1 day ago" },
-    { id: 4, name: "Vikram Singh", email: "vikram@example.com", status: "verified", joined: "1 day ago" },
-  ];
+  const recentUsers = members.slice(0, 4).map((m: any, idx: number) => ({
+    id: idx + 1,
+    name: m.userName || m.name || 'Unknown',
+    email: m.email || 'N/A',
+    status: m.status || 'pending',
+    joined: m.joinedAt ? new Date(m.joinedAt).toLocaleDateString() : 'N/A'
+  }));
 
-  const reportedProfiles = [
-    { id: 1, reporter: "User #2341", reported: "User #5678", reason: "Inappropriate content", date: "1 hour ago" },
-    { id: 2, reporter: "User #4523", reported: "User #8934", reason: "Fake profile", date: "3 hours ago" },
-    { id: 3, reporter: "User #7821", reported: "User #2456", reason: "Spam", date: "5 hours ago" },
-  ];
+  const reportedProfiles = approvals.filter((a: any) => a.type === 'report').slice(0, 3).map((a: any, idx: number) => ({
+    id: idx + 1,
+    reporter: a.userName || 'Unknown',
+    reported: a.details || 'Unknown',
+    reason: a.reason || 'No reason provided',
+    date: a.submittedAt ? new Date(a.submittedAt).toLocaleDateString() : 'N/A'
+  }));
 
   return (
     <SidebarProvider>

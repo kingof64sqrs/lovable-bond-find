@@ -42,7 +42,11 @@ import {
   Code,
   Lock,
   Share2,
-  Smartphone
+  Smartphone,
+  MessageSquare,
+  Eye,
+  Ban,
+  Star
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -79,6 +83,14 @@ const addDetailsSubMenu = [
   { title: "Add Dosh", url: "/admin/add-details/dosh", icon: Plus, count: 11 },
 ];
 
+const userActivitySubMenu = [
+  { title: "Express Interest", url: "/admin/user-activity/express-interest", icon: Heart, count: 12 },
+  { title: "Message", url: "/admin/user-activity/message", icon: MessageSquare, count: 0 },
+  { title: "Viewed Profile", url: "/admin/user-activity/viewed-profile", icon: Eye, count: 31 },
+  { title: "Blocked Profile", url: "/admin/user-activity/blocked-profile", icon: Ban, count: 0 },
+  { title: "Shortlisted Profile", url: "/admin/user-activity/shortlisted-profile", icon: Star, count: 0 },
+];
+
 const menuItems = [
   { title: "My Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "First Form Data", url: "/admin/form-data", icon: FileText },
@@ -100,13 +112,16 @@ const menuItems = [
 const AdminSidebar = () => {
   const { state } = useSidebar();
   const location = useLocation();
-  const [settingsOpen, setSettingsOpen] = useState(true);
-  const [addDetailsOpen, setAddDetailsOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [addDetailsOpen, setAddDetailsOpen] = useState(false);
+  const [userActivityOpen, setUserActivityOpen] = useState(false);
+  const [membershipPlanOpen, setMembershipPlanOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
   const isCollapsed = state === "collapsed";
   const isSettingsActive = location.pathname.startsWith('/admin/settings');
   const isAddDetailsActive = location.pathname.startsWith('/admin/add-details');
+  const isUserActivityActive = location.pathname.startsWith('/admin/user-activity');
 
   return (
     <Sidebar className={isCollapsed ? "w-14" : "w-60"} collapsible="icon">
@@ -193,7 +208,54 @@ const AdminSidebar = () => {
                 </SidebarMenuItem>
               </Collapsible>
 
-              {menuItems.slice(2).map((item) => (
+              {menuItems.slice(2, 5).map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <Link to={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+
+              {/* User Activity with Sub-menu */}
+              <Collapsible open={userActivityOpen} onOpenChange={setUserActivityOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className={isUserActivityActive ? "bg-accent" : ""}>
+                      <Activity className="h-4 w-4" />
+                      {!isCollapsed && (
+                        <>
+                          <span>User Activity</span>
+                          <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${userActivityOpen ? "rotate-180" : ""}`} />
+                        </>
+                      )}
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {userActivitySubMenu.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton asChild isActive={isActive(subItem.url)}>
+                            <Link to={subItem.url} className="flex items-center gap-2">
+                              <subItem.icon className="h-3 w-3" />
+                              <span className="flex-1">{subItem.title}</span>
+                              {subItem.count !== undefined && (
+                                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                                  {subItem.count}
+                                </span>
+                              )}
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {menuItems.slice(5).map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <Link to={item.url} className="flex items-center gap-3">

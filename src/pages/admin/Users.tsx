@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,18 +20,32 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminUsers = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const users = [
-    { id: 1, name: "Priya Sharma", email: "priya@example.com", status: "verified", plan: "Gold", joined: "2024-01-15" },
-    { id: 2, name: "Rahul Kumar", email: "rahul@example.com", status: "pending", plan: "Free", joined: "2024-02-20" },
-    { id: 3, name: "Ananya Patel", email: "ananya@example.com", status: "verified", plan: "Diamond", joined: "2024-01-08" },
-    { id: 4, name: "Vikram Singh", email: "vikram@example.com", status: "verified", plan: "Gold", joined: "2024-02-10" },
-    { id: 5, name: "Sneha Reddy", email: "sneha@example.com", status: "suspended", plan: "Free", joined: "2024-03-01" },
-    { id: 6, name: "Arjun Mehta", email: "arjun@example.com", status: "verified", plan: "Free", joined: "2024-02-28" },
-  ];
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/members', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setUsers(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch users', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {

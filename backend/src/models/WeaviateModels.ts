@@ -39,6 +39,12 @@ export const classes = {
   RASI: 'Rasi',
   ANNUAL_INCOME: 'AnnualIncome',
   DOSH: 'Dosh',
+  // User Activity
+  EXPRESS_INTEREST: 'ExpressInterest',
+  MESSAGE: 'Message',
+  VIEWED_PROFILE: 'ViewedProfile',
+  BLOCKED_PROFILE: 'BlockedProfile',
+  SHORTLISTED_PROFILE: 'ShortlistedProfile',
 } as const;
 
 export interface PropertyDefinition {
@@ -430,6 +436,79 @@ const classDefinitions: ClassDefinition[] = [
     properties: [
       { name: 'name', dataType: ['string'] },
       { name: 'active', dataType: ['boolean'] },
+    ]
+  },
+  {
+    class: classes.EXPRESS_INTEREST,
+    description: 'Express Interest records between users',
+    properties: [
+      { name: 'fromUserId', dataType: ['string'], description: 'User who sent interest' },
+      { name: 'fromUserName', dataType: ['string'] },
+      { name: 'fromProfileId', dataType: ['string'] },
+      { name: 'toUserId', dataType: ['string'], description: 'User who received interest' },
+      { name: 'toUserName', dataType: ['string'] },
+      { name: 'toProfileId', dataType: ['string'] },
+      { name: 'status', dataType: ['string'], description: 'pending, accepted, rejected' },
+      { name: 'createdAt', dataType: ['date'] },
+      { name: 'respondedAt', dataType: ['date'] },
+    ]
+  },
+  {
+    class: classes.MESSAGE,
+    description: 'Messages exchanged between users',
+    properties: [
+      { name: 'fromUserId', dataType: ['string'] },
+      { name: 'fromUserName', dataType: ['string'] },
+      { name: 'fromProfileId', dataType: ['string'] },
+      { name: 'toUserId', dataType: ['string'] },
+      { name: 'toUserName', dataType: ['string'] },
+      { name: 'toProfileId', dataType: ['string'] },
+      { name: 'subject', dataType: ['string'] },
+      { name: 'message', dataType: ['text'] },
+      { name: 'isRead', dataType: ['boolean'] },
+      { name: 'createdAt', dataType: ['date'] },
+      { name: 'readAt', dataType: ['date'] },
+    ]
+  },
+  {
+    class: classes.VIEWED_PROFILE,
+    description: 'Profile view tracking',
+    properties: [
+      { name: 'viewerUserId', dataType: ['string'], description: 'User who viewed' },
+      { name: 'viewerUserName', dataType: ['string'] },
+      { name: 'viewerProfileId', dataType: ['string'] },
+      { name: 'viewedUserId', dataType: ['string'], description: 'User whose profile was viewed' },
+      { name: 'viewedUserName', dataType: ['string'] },
+      { name: 'viewedProfileId', dataType: ['string'] },
+      { name: 'viewedAt', dataType: ['date'] },
+      { name: 'viewTime', dataType: ['string'], description: 'Time in HH:MM format' },
+    ]
+  },
+  {
+    class: classes.BLOCKED_PROFILE,
+    description: 'Blocked user records',
+    properties: [
+      { name: 'blockerUserId', dataType: ['string'], description: 'User who blocked' },
+      { name: 'blockerUserName', dataType: ['string'] },
+      { name: 'blockerProfileId', dataType: ['string'] },
+      { name: 'blockedUserId', dataType: ['string'], description: 'User who was blocked' },
+      { name: 'blockedUserName', dataType: ['string'] },
+      { name: 'blockedProfileId', dataType: ['string'] },
+      { name: 'reason', dataType: ['text'] },
+      { name: 'blockedAt', dataType: ['date'] },
+    ]
+  },
+  {
+    class: classes.SHORTLISTED_PROFILE,
+    description: 'Shortlisted/Favorited profiles',
+    properties: [
+      { name: 'userId', dataType: ['string'], description: 'User who shortlisted' },
+      { name: 'userName', dataType: ['string'] },
+      { name: 'userProfileId', dataType: ['string'] },
+      { name: 'shortlistedUserId', dataType: ['string'], description: 'Shortlisted user' },
+      { name: 'shortlistedUserName', dataType: ['string'] },
+      { name: 'shortlistedProfileId', dataType: ['string'] },
+      { name: 'shortlistedAt', dataType: ['date'] },
     ]
   },
 ];

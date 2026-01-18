@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,28 +7,77 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Plus, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const EmailTemplates = () => {
-  const [templates, setTemplates] = useState([
-    { id: 1, name: "Welcome Email", subject: "Welcome to Lovable", status: "active" },
-    { id: 2, name: "Password Reset", subject: "Reset your password", status: "active" },
-    { id: 3, name: "Profile Verified", subject: "Your profile is verified", status: "inactive" },
-  ]);
+  const { toast } = useToast();
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/email-templates', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setTemplates(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch templates', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [newTemplate, setNewTemplate] = useState({
     name: "",
     subject: "",
   });
 
-  const handleAddTemplate = () => {
-    if (newTemplate.name && newTemplate.subject) {
-      setTemplates([...templates, { id: templates.length + 1, ...newTemplate, status: "active" }]);
-      setNewTemplate({ name: "", subject: "" });
+  const handleAddTemplate = async () => {
+    if (!newTemplate.name || !newTemplate.subject) {
+      toast({ title: 'Validation Error', description: 'All fields are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/email-templates', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...newTemplate, status: 'active' })
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Template created successfully' });
+        fetchTemplates();
+        setNewTemplate({ name: "", subject: "" });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create template', variant: 'destructive' });
     }
   };
 
-  const handleDelete = (id: number) => {
-    setTemplates(templates.filter(t => t.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/EmailTemplate/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Template deleted successfully' });
+        fetchTemplates();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete template', variant: 'destructive' });
+    }
   };
 
   return (

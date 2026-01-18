@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { initializeSchemas } from './models/WeaviateModels';
 import adminRoutes from './routes/adminRoutes';
 import referenceDataRoutes from './routes/referenceDataRoutes';
+import userActivityRoutes from './routes/userActivityRoutes';
 
 const app: Express = express();
 
@@ -48,6 +49,9 @@ app.use('/api/admin', adminRoutes);
 
 // Reference data routes
 app.use('/api/reference', referenceDataRoutes);
+
+// User activity routes
+app.use('/api/user-activity', userActivityRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response): void => {

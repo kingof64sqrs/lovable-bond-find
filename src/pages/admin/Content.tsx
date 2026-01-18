@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,28 +7,77 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Plus, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const ContentManagement = () => {
-  const [contents, setContents] = useState([
-    { id: 1, title: "How to Create Profile", category: "FAQ", status: "published" },
-    { id: 2, title: "Privacy Policy", category: "Legal", status: "published" },
-    { id: 3, title: "Terms of Service", category: "Legal", status: "draft" },
-  ]);
+  const { toast } = useToast();
+  const [contents, setContents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchContents();
+  }, []);
+
+  const fetchContents = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/content', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) setContents(result.data || []);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch content', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [newContent, setNewContent] = useState({
     title: "",
     category: "",
   });
 
-  const handleAddContent = () => {
-    if (newContent.title) {
-      setContents([...contents, { id: contents.length + 1, ...newContent, status: "draft" }]);
-      setNewContent({ title: "", category: "" });
+  const handleAddContent = async () => {
+    if (!newContent.title || !newContent.category) {
+      toast({ title: 'Validation Error', description: 'All fields are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/content', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...newContent, status: 'draft' })
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Content created successfully' });
+        fetchContents();
+        setNewContent({ title: "", category: "" });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create content', variant: 'destructive' });
     }
   };
 
-  const handleDelete = (id: number) => {
-    setContents(contents.filter(c => c.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/Content/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast({ title: 'Success', description: 'Content deleted successfully' });
+        fetchContents();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete content', variant: 'destructive' });
+    }
   };
 
   return (

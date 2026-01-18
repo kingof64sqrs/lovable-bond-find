@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -6,24 +6,46 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import AdminSidebar from "@/components/AdminSidebar";
 import { CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Approvals = () => {
-  const [approvals, setApprovals] = useState([
-    { id: 1, userName: "Priya Sharma", type: "Profile", submittedAt: "2024-01-15", status: "pending" },
-    { id: 2, userName: "Rahul Kumar", type: "Photo", submittedAt: "2024-02-20", status: "pending" },
-    { id: 3, userName: "Ananya Patel", type: "Profile", submittedAt: "2024-01-08", status: "approved" },
-  ]);
+  const { toast } = useToast();
+  const [approvals, setApprovals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleApprove = (id: number) => {
-    setApprovals(approvals.map(a => 
-      a.id === id ? { ...a, status: "approved" } : a
-    ));
+  useEffect(() => {
+    fetchApprovals();
+  }, []);
+
+  const fetchApprovals = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3000/api/admin/approvals', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        setApprovals(result.data);
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch approvals', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = (id: number) => {
+  const handleApprove = (id: string) => {
     setApprovals(approvals.map(a => 
-      a.id === id ? { ...a, status: "rejected" } : a
+      a._additional?.id === id ? { ...a, status: "approved" } : a
     ));
+    toast({ title: 'Success', description: 'Approval status updated' });
+  };
+
+  const handleReject = (id: string) => {
+    setApprovals(approvals.map(a => 
+      a._additional?.id === id ? { ...a, status: "rejected" } : a
+    ));
+    toast({ title: 'Success', description: 'Approval rejected' });
   };
 
   return (

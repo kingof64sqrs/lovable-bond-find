@@ -238,6 +238,55 @@ export const getApprovals = async (
   }
 };
 
+// Advertisements Controller
+export const getAdvertisements = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const response = await client.graphql.get()
+      .withClassName(classes.ADVERTISEMENTS)
+      .withFields('title url startDate endDate _additional { id }')
+      .do();
+
+    res.status(200).json({
+      success: true,
+      data: getDataSafely(response, classes.ADVERTISEMENTS)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createAdvertisement = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { title, url, startDate, endDate } = req.body;
+
+    const response = await client.data.creator()
+      .withClassName(classes.ADVERTISEMENTS)
+      .withProperties({
+        title,
+        url,
+        startDate,
+        endDate
+      } as Record<string, unknown>)
+      .do();
+
+    res.status(201).json({
+      success: true,
+      message: 'Advertisement created successfully',
+      data: response
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // User Activity Controller
 export const getUserActivity = async (
   _req: Request,
@@ -409,12 +458,41 @@ export const getPaymentOptions = async (
   try {
     const response = await client.graphql.get()
       .withClassName(classes.PAYMENT_OPTION)
-      .withFields('gateway enabled _additional { id }')
+      .withFields('stripeKey paypalEmail razorpayKey bankTransfer upiEnabled _additional { id }')
       .do();
 
     res.status(200).json({
       success: true,
       data: getDataSafely(response, classes.PAYMENT_OPTION)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createPaymentOption = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { stripeKey, paypalEmail, razorpayKey, bankTransfer, upiEnabled } = req.body;
+
+    const response = await client.data.creator()
+      .withClassName(classes.PAYMENT_OPTION)
+      .withProperties({
+        stripeKey,
+        paypalEmail,
+        razorpayKey,
+        bankTransfer,
+        upiEnabled
+      } as Record<string, unknown>)
+      .do();
+
+    res.status(201).json({
+      success: true,
+      message: 'Payment options saved successfully',
+      data: response
     });
   } catch (error) {
     next(error);
