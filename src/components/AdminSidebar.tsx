@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -123,8 +123,21 @@ const AdminSidebar = () => {
   const isAddDetailsActive = location.pathname.startsWith('/admin/add-details');
   const isUserActivityActive = location.pathname.startsWith('/admin/user-activity');
 
+  // Keep collapsibles open when navigating to their sub-routes
+  useEffect(() => {
+    if (isSettingsActive) {
+      setSettingsOpen(true);
+    }
+    if (isAddDetailsActive) {
+      setAddDetailsOpen(true);
+    }
+    if (isUserActivityActive) {
+      setUserActivityOpen(true);
+    }
+  }, [isSettingsActive, isAddDetailsActive, isUserActivityActive]);
+
   return (
-    <Sidebar className={isCollapsed ? "w-14" : "w-60"} collapsible="icon">
+    <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Control Panel</SidebarGroupLabel>
@@ -160,9 +173,9 @@ const AdminSidebar = () => {
                       {siteSettingsSubMenu.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild isActive={isActive(subItem.url)}>
-                            <Link to={subItem.url} className="flex items-center gap-2">
-                              <subItem.icon className="h-3 w-3" />
-                              <span>{subItem.title}</span>
+                            <Link to={subItem.url} className="flex items-center gap-2 text-xs">
+                              <subItem.icon className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -191,11 +204,11 @@ const AdminSidebar = () => {
                       {addDetailsSubMenu.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild isActive={isActive(subItem.url)}>
-                            <Link to={subItem.url} className="flex items-center gap-2">
-                              <subItem.icon className="h-3 w-3" />
-                              <span className="flex-1">{subItem.title}</span>
+                            <Link to={subItem.url} className="flex items-center gap-2 text-xs">
+                              <subItem.icon className="h-3 w-3 flex-shrink-0" />
+                              <span className="flex-1 truncate">{subItem.title}</span>
                               {subItem.count !== undefined && (
-                                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                                <span className="text-xs bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
                                   {subItem.count}
                                 </span>
                               )}
@@ -238,11 +251,11 @@ const AdminSidebar = () => {
                       {userActivitySubMenu.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild isActive={isActive(subItem.url)}>
-                            <Link to={subItem.url} className="flex items-center gap-2">
-                              <subItem.icon className="h-3 w-3" />
-                              <span className="flex-1">{subItem.title}</span>
+                            <Link to={subItem.url} className="flex items-center gap-2 text-xs">
+                              <subItem.icon className="h-3 w-3 flex-shrink-0" />
+                              <span className="flex-1 truncate">{subItem.title}</span>
                               {subItem.count !== undefined && (
-                                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                                <span className="text-xs bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
                                   {subItem.count}
                                 </span>
                               )}

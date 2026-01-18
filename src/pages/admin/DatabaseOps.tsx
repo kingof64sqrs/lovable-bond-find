@@ -1,8 +1,7 @@
 import { useState } from "react";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
 import { AlertCircle, Trash2, RefreshCw } from "lucide-react";
 import {
   Alert,
@@ -51,19 +50,9 @@ const DatabaseOps = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center gap-4 p-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">Database Operations</h1>
-            </div>
-          </header>
-
-          <div className="p-6 max-w-2xl space-y-6">
-            <Alert>
+    <AdminLayout title="Database Operations">
+      <div className="max-w-2xl space-y-6">
+        <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 Be careful with database operations. Some operations may impact system performance.
@@ -141,10 +130,8 @@ const DatabaseOps = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </main>
       </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

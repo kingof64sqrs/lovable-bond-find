@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Download } from "lucide-react";
 
 const MemberReport = () => {
@@ -23,23 +22,8 @@ const MemberReport = () => {
   }, 0);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold">Member Report</h1>
-              </div>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" /> Export Report
-              </Button>
-            </div>
-          </header>
-
-          <div className="p-6 space-y-6">
+    <AdminLayout title="Member Report">
+      <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardContent className="pt-6">
@@ -103,9 +87,7 @@ const MemberReport = () => {
               </CardContent>
             </Card>
           </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

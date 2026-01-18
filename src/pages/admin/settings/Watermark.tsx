@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,16 +21,9 @@ const Watermark = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <div className="flex-1 p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <SidebarTrigger />
-            <h1 className="text-3xl font-bold">Update Watermark</h1>
-          </div>
-
-          <Card className="max-w-4xl">
+    <AdminLayout title="Update Watermark">
+      <div className="flex-1 p-8">
+        <Card className="max-w-4xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Droplet className="h-5 w-5" />
@@ -111,8 +103,7 @@ const Watermark = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

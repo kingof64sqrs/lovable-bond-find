@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -52,18 +51,8 @@ const AdminVerifications = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-16 items-center gap-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">Profile Verifications</h1>
-            </div>
-          </header>
-
-          <div className="container py-6 space-y-6">
+    <AdminLayout title="Profile Verifications">
+      <div className="container py-6 space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
               <Card className="shadow-soft">
                 <CardContent className="pt-6">
@@ -156,9 +145,7 @@ const AdminVerifications = () => {
               </CardContent>
             </Card>
           </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

@@ -1,10 +1,9 @@
 import { useState } from "react";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
 import { Save } from "lucide-react";
 
 const SiteSettings = () => {
@@ -35,20 +34,8 @@ const SiteSettings = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold">Site Settings</h1>
-              </div>
-            </div>
-          </header>
-
-          <div className="p-6 max-w-2xl">
+    <AdminLayout title="Site Settings">
+      <div className="p-6 max-w-2xl">
             <Card>
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
@@ -181,9 +168,7 @@ const SiteSettings = () => {
               </CardContent>
             </Card>
           </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

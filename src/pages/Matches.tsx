@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,84 +14,64 @@ import {
   GraduationCap,
   Filter,
   Star,
-  ArrowLeft
+  ArrowLeft,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { userAPI } from "@/lib/userAPI";
 
 const Matches = () => {
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [matches, setMatches] = useState<any[]>([]);
   const { toast } = useToast();
 
-  const matches = [
-    {
-      id: 1,
-      name: "Priya Sharma",
-      age: 28,
-      location: "Mumbai, Maharashtra",
-      education: "MBA",
-      profession: "Marketing Manager",
-      matchScore: 95,
-      type: "premium"
-    },
-    {
-      id: 2,
-      name: "Ananya Patel",
-      age: 26,
-      location: "Ahmedabad, Gujarat",
-      education: "B.Tech",
-      profession: "Software Engineer",
-      matchScore: 92,
-      type: "new"
-    },
-    {
-      id: 3,
-      name: "Sneha Reddy",
-      age: 27,
-      location: "Hyderabad, Telangana",
-      education: "MBBS",
-      profession: "Doctor",
-      matchScore: 88,
-      type: "recent"
-    },
-    {
-      id: 4,
-      name: "Kavya Iyer",
-      age: 25,
-      location: "Chennai, Tamil Nadu",
-      education: "CA",
-      profession: "Chartered Accountant",
-      matchScore: 85,
-      type: "recommended"
-    },
-    {
-      id: 5,
-      name: "Meera Singh",
-      age: 29,
-      location: "Delhi, NCR",
-      education: "M.Sc",
-      profession: "Research Scientist",
-      matchScore: 83,
-      type: "recent"
-    },
-    {
-      id: 6,
-      name: "Neha Gupta",
-      age: 27,
-      location: "Bangalore, Karnataka",
-      education: "MBA",
-      profession: "Product Manager",
-      matchScore: 80,
-      type: "new"
-    }
-  ];
+  useEffect(() => {
+    fetchMatches();
+  }, []);
 
-  const handleSendInterest = (name: string) => {
-    toast({
-      title: "Interest Sent!",
-      description: `Your interest has been sent to ${name}.`,
-    });
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const [matchesRes, recsRes] = await Promise.all([
+        userAPI.searchAPI.getMatches(),
+        userAPI.searchAPI.getRecommendations()
+      ]);
+      
+      const allMatches = [
+        ...(matchesRes.data || []),
+        ...(recsRes.data || [])
+      ];
+      
+      setMatches(allMatches);
+    } catch (error: any) {
+      console.error('Failed to fetch matches:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load matches",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendInterest = async (profileId: number, name: string) => {
+    try {
+      await userAPI.interestAPI.sendInterest({ profileId });
+      toast({
+        title: "Interest Sent!",
+        description: `Your interest has been sent to ${name}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send interest",
+        variant: "destructive"
+      });
+    }
   };
 
   const getMatchColor = (score: number) => {
@@ -222,6 +202,12 @@ const Matches = () => {
           </Card>
 
           {/* Tabs */}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-3 text-lg">Loading matches...</span>
+            </div>
+          ) : (
           <Tabs defaultValue="all" className="w-full">
             <TabsList>
               <TabsTrigger value="all">All Matches</TabsTrigger>
@@ -506,6 +492,7 @@ const Matches = () => {
               </div>
             </TabsContent>
           </Tabs>
+          )}
         </div>
       </div>
 

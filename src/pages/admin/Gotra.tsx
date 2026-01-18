@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -140,17 +139,9 @@ export default function Gotra() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <SidebarInset className="flex-1">
-          <div className="flex flex-col gap-6 p-6">
-            <div>
-              <h1 className="text-3xl font-bold">Gotra Management</h1>
-              <p className="text-muted-foreground">Add and manage gotras</p>
-            </div>
-
-            <Card>
+    <AdminLayout title="Gotra Management">
+      <div className="flex flex-col gap-6">
+        <Card>
               <CardHeader>
                 <CardTitle>Add New Gotra</CardTitle>
                 <CardDescription>Create a new gotra entry</CardDescription>
@@ -237,9 +228,7 @@ export default function Gotra() {
                 )}
               </CardContent>
             </Card>
-          </div>
-        </SidebarInset>
       </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 }

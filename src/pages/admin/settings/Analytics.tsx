@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,16 +17,9 @@ const Analytics = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <div className="flex-1 p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <SidebarTrigger />
-            <h1 className="text-3xl font-bold">Update/Add Analytics Code</h1>
-          </div>
-
-          <div className="grid gap-6 max-w-4xl">
+    <AdminLayout title="Update/Add Analytics Code">
+      <div className="flex-1 p-8">
+        <div className="grid gap-6 max-w-4xl">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -91,8 +83,7 @@ const Analytics = () => {
             </div>
           </div>
         </div>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

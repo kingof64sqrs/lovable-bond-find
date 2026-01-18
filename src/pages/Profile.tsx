@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,50 +20,62 @@ import {
   ArrowLeft,
   Phone,
   Mail,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { userAPI } from "@/lib/userAPI";
 
 const Profile = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
 
-  // Mock profile data - in real app, fetch based on id
-  const profile = {
-    id: id || "1",
-    name: "Priya Sharma",
-    age: 28,
-    profilePhoto: null,
-    verified: true,
-    religion: "Hindu",
-    caste: "Brahmin",
-    location: "Mumbai, Maharashtra",
-    height: "5'5\"",
-    maritalStatus: "Never Married",
-    motherTongue: "Hindi",
-    education: "MBA in Finance",
-    college: "IIM Ahmedabad",
-    occupation: "Marketing Manager",
-    company: "Tech Corp India",
-    employedIn: "Private Company",
-    annualIncome: "₹12-15 Lakhs",
-    familyType: "Nuclear Family",
-    fatherOccupation: "Business",
-    motherOccupation: "Homemaker",
-    siblings: "1 Brother",
-    about: "I'm a passionate professional who loves my work and values family traditions. Looking for a life partner who understands the importance of both career and family.",
-    hobbies: ["Reading", "Traveling", "Cooking", "Yoga"],
-    createdOn: "2 months ago",
-    lastActive: "2 hours ago"
+  useEffect(() => {
+    if (id) {
+      fetchProfile();
+    }
+  }, [id]);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await userAPI.profileAPI.getProfile(id!);
+      if (response.success && response.data) {
+        setProfile(response.data);
+        // Track profile view
+        await userAPI.activityAPI.viewProfile(id!);
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleConnect = () => {
-    toast({
-      title: "Interest Sent!",
-      description: `Your interest has been sent to ${profile.name}.`,
-    });
+  const handleConnect = async () => {
+    if (!profile) return;
+    try {
+      await userAPI.interestAPI.sendInterest({ profileId: profile.id });
+      toast({
+        title: "Interest Sent!",
+        description: `Your interest has been sent to ${profile.name}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send interest",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleShare = () => {
@@ -76,6 +89,21 @@ const Profile = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-3 text-lg">Loading profile...</span>
+        </div>
+      ) : !profile ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground">Profile not found</p>
+            <Link to="/search">
+              <Button className="mt-4">Back to Search</Button>
+            </Link>
+          </div>
+        </div>
+      ) : (
       <div className="flex-1 bg-muted/30">
         <div className="container py-8">
           <Link to="/search" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
@@ -320,6 +348,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      )}
 
       <Footer />
     </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,120 +13,65 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Heart, MapPin, Briefcase, GraduationCap, Filter, Lock, UserPlus } from "lucide-react";
+import { Heart, MapPin, Briefcase, GraduationCap, Filter, Lock, UserPlus, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { userAPI } from "@/lib/userAPI";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [filters, setFilters] = useState({
+    minAge: '',
+    maxAge: '',
+    religion: '',
+    education: '',
+    location: ''
+  });
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Mock profile data - Extended list for authenticated users
-  const allProfiles = [
-    {
-      id: 1,
-      name: "Priya Sharma",
-      age: 28,
-      location: "Mumbai, Maharashtra",
-      education: "MBA",
-      profession: "Marketing Manager",
-      religion: "Hindu"
-    },
-    {
-      id: 2,
-      name: "Ananya Patel",
-      age: 26,
-      location: "Ahmedabad, Gujarat",
-      education: "B.Tech",
-      profession: "Software Engineer",
-      religion: "Hindu"
-    },
-    {
-      id: 3,
-      name: "Sneha Reddy",
-      age: 27,
-      location: "Hyderabad, Telangana",
-      education: "MBBS",
-      profession: "Doctor",
-      religion: "Hindu"
-    },
-    {
-      id: 4,
-      name: "Kavya Iyer",
-      age: 25,
-      location: "Chennai, Tamil Nadu",
-      education: "CA",
-      profession: "Chartered Accountant",
-      religion: "Hindu"
-    },
-    // Additional profiles for authenticated users
-    {
-      id: 5,
-      name: "Meera Singh",
-      age: 29,
-      location: "Delhi, NCR",
-      education: "M.Sc",
-      profession: "Research Scientist",
-      religion: "Hindu"
-    },
-    {
-      id: 6,
-      name: "Neha Gupta",
-      age: 27,
-      location: "Bangalore, Karnataka",
-      education: "MBA",
-      profession: "Product Manager",
-      religion: "Hindu"
-    },
-    {
-      id: 7,
-      name: "Riya Verma",
-      age: 26,
-      location: "Pune, Maharashtra",
-      education: "B.Tech",
-      profession: "Data Analyst",
-      religion: "Hindu"
-    },
-    {
-      id: 8,
-      name: "Anjali Rao",
-      age: 28,
-      location: "Hyderabad, Telangana",
-      education: "M.Tech",
-      profession: "Software Architect",
-      religion: "Hindu"
-    },
-    {
-      id: 9,
-      name: "Divya Nair",
-      age: 25,
-      location: "Kochi, Kerala",
-      education: "BDS",
-      profession: "Dentist",
-      religion: "Hindu"
-    },
-    {
-      id: 10,
-      name: "Pooja Desai",
-      age: 27,
-      location: "Surat, Gujarat",
-      education: "CA",
-      profession: "Finance Manager",
-      religion: "Hindu"
-    }
-  ];
+  // Fetch profiles from backend
+  useEffect(() => {
+    fetchProfiles();
+  }, [isAuthenticated]);
 
-  // Limit profiles for non-authenticated users
-  const profiles = isAuthenticated 
-    ? allProfiles.slice(0, visibleCount)
-    : allProfiles.slice(0, 4);
+  const fetchProfiles = async () => {
+    try {
+      setLoading(true);
+      const response = await userAPI.searchAPI.searchProfiles(filters);
+      setProfiles(response.data || []);
+    } catch (error: any) {
+      console.error('Failed to fetch profiles:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to load profiles",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSearch = () => {
+    fetchProfiles();
+  };
+
+  // Limit profiles for display
+  const displayProfiles = isAuthenticated 
+    ? profiles.slice(0, visibleCount)
+    : profiles.slice(0, 4);
 
   const handleLoadMore = () => {
     if (!isAuthenticated) {
@@ -134,16 +79,16 @@ const Search = () => {
       return;
     }
 
-    if (visibleCount < allProfiles.length) {
-      setVisibleCount(prev => Math.min(prev + 3, allProfiles.length));
+    if (visibleCount < profiles.length) {
+      setVisibleCount(prev => Math.min(prev + 3, profiles.length));
       toast({
         title: "More profiles loaded!",
-        description: `Showing ${Math.min(visibleCount + 3, allProfiles.length)} of ${allProfiles.length} profiles`,
+        description: `Showing ${Math.min(visibleCount + 3, profiles.length)} of ${profiles.length} profiles`,
       });
     }
   };
 
-  const handleConnect = (profileName: string) => {
+  const handleConnect = async (profileId: number, profileName: string) => {
     if (!isAuthenticated) {
       toast({
         title: "Login Required",
@@ -154,13 +99,22 @@ const Search = () => {
       return;
     }
     
-    toast({
-      title: "Interest Sent!",
-      description: `Your interest has been sent to ${profileName}.`,
-    });
+    try {
+      await userAPI.interestAPI.sendInterest({ profileId });
+      toast({
+        title: "Interest Sent!",
+        description: `Your interest has been sent to ${profileName}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send interest",
+        variant: "destructive"
+      });
+    }
   };
 
-  const hasMoreProfiles = isAuthenticated ? visibleCount < allProfiles.length : true;
+  const hasMoreProfiles = isAuthenticated ? visibleCount < profiles.length : true;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -192,13 +146,23 @@ const Search = () => {
               <div className="space-y-2">
                 <Label>Age Range</Label>
                 <div className="flex gap-2">
-                  <Input type="number" placeholder="Min" />
-                  <Input type="number" placeholder="Max" />
+                  <Input 
+                    type="number" 
+                    placeholder="Min" 
+                    value={filters.minAge}
+                    onChange={(e) => handleFilterChange('minAge', e.target.value)}
+                  />
+                  <Input 
+                    type="number" 
+                    placeholder="Max" 
+                    value={filters.maxAge}
+                    onChange={(e) => handleFilterChange('maxAge', e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Religion</Label>
-                <Select>
+                <Select value={filters.religion} onValueChange={(val) => handleFilterChange('religion', val)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -211,26 +175,30 @@ const Search = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Community</Label>
-                <Select>
+                <Label>Education</Label>
+                <Select value={filters.education} onValueChange={(val) => handleFilterChange('education', val)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="brahmin">Brahmin</SelectItem>
-                    <SelectItem value="kshatriya">Kshatriya</SelectItem>
-                    <SelectItem value="vaishya">Vaishya</SelectItem>
+                    <SelectItem value="b.tech">B.Tech</SelectItem>
+                    <SelectItem value="mba">MBA</SelectItem>
+                    <SelectItem value="mbbs">MBBS</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label>Location</Label>
-                <Input placeholder="City or State" />
+                <Input 
+                  placeholder="City or State" 
+                  value={filters.location}
+                  onChange={(e) => handleFilterChange('location', e.target.value)}
+                />
               </div>
             </div>
             <div className="mt-4 flex justify-end">
-              <Button className="gradient-accent">Apply Filters</Button>
+              <Button className="gradient-accent" onClick={handleSearch}>Apply Filters</Button>
             </div>
           </div>
         </section>
@@ -238,106 +206,115 @@ const Search = () => {
 
       <section className="py-8 flex-1">
         <div className="container">
-          {!isAuthenticated && (
-            <Alert className="mb-6 border-primary/20 bg-primary/5">
-              <Lock className="h-4 w-4" />
-              <AlertTitle>Limited Preview</AlertTitle>
-              <AlertDescription>
-                You're viewing a limited set of profiles. Login to see more verified profiles and connect with matches!
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="mb-6 flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Showing {profiles.length} {isAuthenticated ? `of ${allProfiles.length}` : ''} profiles
-              {isAuthenticated && (
-                <span className="ml-2 text-primary font-medium">
-                  ✓ Viewing all profiles
-                </span>
-              )}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-3 text-lg">Loading profiles...</span>
             </div>
-            {!isAuthenticated && (
-              <Link to="/register">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Register to See More
-                </Button>
-              </Link>
-            )}
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profiles.map((profile) => (
-              <Card key={profile.id} className="shadow-soft hover:shadow-elegant transition-all">
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold mb-1">{profile.name}</h3>
-                        <p className="text-sm text-muted-foreground">{profile.age} years</p>
-                      </div>
-                      <Button size="icon" variant="ghost" className="text-primary">
-                        <Heart className="h-5 w-5" />
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{profile.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <GraduationCap className="h-4 w-4" />
-                        <span>{profile.education}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Briefcase className="h-4 w-4" />
-                        <span>{profile.profession}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <Link to={`/profile/${profile.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full">View Profile</Button>
-                      </Link>
-                      <Button 
-                        className="flex-1 gradient-accent"
-                        onClick={() => handleConnect(profile.name)}
-                      >
-                        Connect
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {hasMoreProfiles && (
-            <div className="mt-8 text-center">
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={handleLoadMore}
-                className={!isAuthenticated ? "gap-2" : ""}
-              >
-                {!isAuthenticated && <Lock className="h-4 w-4" />}
-                {isAuthenticated ? "Load More Profiles" : "Login to See More Profiles"}
-              </Button>
+          ) : (
+            <>
               {!isAuthenticated && (
-                <p className="text-sm text-muted-foreground mt-3">
-                  Register for free to view {allProfiles.length - 4}+ more verified profiles
-                </p>
+                <Alert className="mb-6 border-primary/20 bg-primary/5">
+                  <Lock className="h-4 w-4" />
+                  <AlertTitle>Limited Preview</AlertTitle>
+                  <AlertDescription>
+                    You're viewing a limited set of profiles. Login to see more verified profiles and connect with matches!
+                  </AlertDescription>
+                </Alert>
               )}
-            </div>
-          )}
-          
-          {isAuthenticated && !hasMoreProfiles && (
-            <div className="mt-8 text-center text-muted-foreground">
-              <p>You've viewed all available profiles</p>
-              <p className="text-sm mt-2">Check back later for new matches!</p>
-            </div>
+              
+              <div className="mb-6 flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Showing {displayProfiles.length} {isAuthenticated ? `of ${profiles.length}` : ''} profiles
+                  {isAuthenticated && (
+                    <span className="ml-2 text-primary font-medium">
+                      ✓ Viewing all profiles
+                    </span>
+                  )}
+                </div>
+                {!isAuthenticated && (
+                  <Link to="/register">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <UserPlus className="h-4 w-4" />
+                      Register to See More
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayProfiles.map((profile) => (
+                  <Card key={profile.id} className="shadow-soft hover:shadow-elegant transition-all">
+                    <CardContent className="pt-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-semibold mb-1">{profile.name}</h3>
+                            <p className="text-sm text-muted-foreground">{profile.age} years</p>
+                          </div>
+                          <Button size="icon" variant="ghost" className="text-primary">
+                            <Heart className="h-5 w-5" />
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <MapPin className="h-4 w-4" />
+                            <span>{profile.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <GraduationCap className="h-4 w-4" />
+                            <span>{profile.education}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Briefcase className="h-4 w-4" />
+                            <span>{profile.profession}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <Link to={`/profile/${profile.id}`} className="flex-1">
+                            <Button variant="outline" className="w-full">View Profile</Button>
+                          </Link>
+                          <Button 
+                            className="flex-1 gradient-accent"
+                            onClick={() => handleConnect(profile.id, profile.name)}
+                          >
+                            Connect
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {hasMoreProfiles && (
+                <div className="mt-8 text-center">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={handleLoadMore}
+                    className={!isAuthenticated ? "gap-2" : ""}
+                  >
+                    {!isAuthenticated && <Lock className="h-4 w-4" />}
+                    {isAuthenticated ? "Load More Profiles" : "Login to See More Profiles"}
+                  </Button>
+                  {!isAuthenticated && (
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Register for free to view more verified profiles
+                    </p>
+                  )}
+                </div>
+              )}
+              
+              {isAuthenticated && !hasMoreProfiles && (
+                <div className="mt-8 text-center text-muted-foreground">
+                  <p>You've viewed all available profiles</p>
+                  <p className="text-sm mt-2">Check back later for new matches!</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,16 +24,9 @@ const Password = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <div className="flex-1 p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <SidebarTrigger />
-            <h1 className="text-3xl font-bold">Change Password</h1>
-          </div>
-
-          <Card className="max-w-2xl">
+    <AdminLayout title="Change Password">
+      <div className="flex-1 p-8">
+        <Card className="max-w-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
@@ -128,8 +120,7 @@ const Password = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Plus, Save } from "lucide-react";
 
 const AddDetails = () => {
@@ -27,18 +26,8 @@ const AddDetails = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center gap-4 p-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">Add New Details</h1>
-            </div>
-          </header>
-
-          <div className="p-6 max-w-2xl">
+    <AdminLayout title="Add New Details">
+      <div className="p-6 max-w-2xl">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -97,9 +86,7 @@ const AddDetails = () => {
               </CardContent>
             </Card>
           </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

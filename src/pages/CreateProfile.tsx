@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Heart, ArrowRight, ArrowLeft } from "lucide-react";
+import { Heart, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import { userAPI } from "@/lib/userAPI";
 
 const CreateProfile = () => {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     // Personal Details
     height: "",
@@ -60,12 +62,27 @@ const CreateProfile = () => {
     }
   };
 
-  const handleSubmit = () => {
-    toast({
-      title: "Profile created successfully!",
-      description: "Your profile is now live. Start finding matches!",
-    });
-    navigate("/dashboard");
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const response = await userAPI.profileAPI.createProfile(formData);
+      
+      if (response.success) {
+        toast({
+          title: "Profile created successfully!",
+          description: "Your profile is now live. Start finding matches!",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create profile",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const updateFormData = (field: string, value: string) => {
@@ -428,9 +445,19 @@ const CreateProfile = () => {
               <Button 
                 onClick={handleNext} 
                 className="gradient-accent ml-auto gap-2"
+                disabled={isSubmitting}
               >
-                {step === totalSteps ? "Complete Profile" : "Next"}
-                {step < totalSteps && <ArrowRight className="h-4 w-4" />}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating Profile...
+                  </>
+                ) : (
+                  <>
+                    {step === totalSteps ? "Complete Profile" : "Next"}
+                    {step < totalSteps && <ArrowRight className="h-4 w-4" />}
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>

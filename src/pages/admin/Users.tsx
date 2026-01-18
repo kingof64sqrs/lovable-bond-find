@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Table,
   TableBody,
@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import AdminSidebar from "@/components/AdminSidebar";
 import { Search, MoreVertical, UserX, CheckCircle } from "lucide-react";
 import {
   DropdownMenu,
@@ -71,19 +70,8 @@ const AdminUsers = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-16 items-center gap-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">User Management</h1>
-            </div>
-          </header>
-
-          <div className="container py-6 space-y-6">
-            <Card className="shadow-soft">
+    <AdminLayout title="User Management">
+      <Card className="shadow-soft">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>All Users</CardTitle>
@@ -149,10 +137,7 @@ const AdminUsers = () => {
                 </Table>
               </CardContent>
             </Card>
-          </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

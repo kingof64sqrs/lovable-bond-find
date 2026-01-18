@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,75 +12,95 @@ import {
   LogOut,
   CheckCircle,
   Clock,
-  Star
+  Star,
+  Loader2
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { userAPI } from "@/lib/userAPI";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [userStats, setUserStats] = useState({
+    name: user?.name || "User",
+    profileCompletion: 0,
+    profileViews: 0,
+    interests: 0,
+    matches: 0
+  });
+  const [matches, setMatches] = useState<any[]>([]);
+  const [recentVisitors, setRecentVisitors] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch stats
+      const statsResponse = await userAPI.dashboardAPI.getStats();
+      if (statsResponse.success && statsResponse.data) {
+        setUserStats(prev => ({
+          ...prev,
+          profileViews: statsResponse.data.profileViews || 0,
+          interests: statsResponse.data.interests || 0,
+          matches: statsResponse.data.matches || 0
+        }));
+      }
+
+      // Fetch matches
+      const matchesResponse = await userAPI.searchAPI.getMatches();
+      if (matchesResponse.success) {
+        setMatches(matchesResponse.data.slice(0, 3));
+      }
+
+      // Fetch recent visitors
+      const visitorsResponse = await userAPI.activityAPI.getProfileViewers();
+      if (visitorsResponse.success) {
+        setRecentVisitors(visitorsResponse.data.slice(0, 3));
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch dashboard data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  // Mock user data - in production, this would come from user object
-  const userStats = {
-    name: user?.name || "User",
-    profileCompletion: 85,
-    profileViews: 234,
-    interests: 12,
-    matches: 45
-  };
-
-  // Mock matches data
-  const matches = [
-    {
-      id: 1,
-      name: "Priya Sharma",
-      age: 28,
-      location: "Mumbai",
-      match: 92,
-      image: null
-    },
-    {
-      id: 2,
-      name: "Ananya Patel",
-      age: 26,
-      location: "Ahmedabad",
-      match: 88,
-      image: null
-    },
-    {
-      id: 3,
-      name: "Sneha Reddy",
-      age: 27,
-      location: "Hyderabad",
-      match: 85,
-      image: null
-    }
-  ];
-
-  // Mock recent visitors
-  const recentVisitors = [
-    { id: 1, name: "Kavya Iyer", time: "2 hours ago" },
-    { id: 2, name: "Meera Singh", time: "5 hours ago" },
-    { id: 3, name: "Neha Gupta", time: "1 day ago" }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <div className="flex-1 bg-muted/30">
-        <div className="container py-8">
-          <div className="grid md:grid-cols-4 gap-6">
-            {/* Sidebar */}
-            <div className="md:col-span-1 space-y-4">
+        {loading ? (
+          <div className="container py-20">
+            <div className="flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-3 text-lg">Loading dashboard...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="container py-8">
+            <div className="grid md:grid-cols-4 gap-6">
+              {/* Sidebar */}
+              <div className="md:col-span-1 space-y-4">
               <Card className="shadow-soft">
                 <CardContent className="pt-6 text-center space-y-4">
                   <Avatar className="w-24 h-24 mx-auto">
@@ -294,6 +315,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       <Footer />

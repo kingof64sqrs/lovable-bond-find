@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminLayout from "@/components/AdminLayout";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -68,18 +67,8 @@ const PaymentOption = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center gap-4 p-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">Payment Options</h1>
-            </div>
-          </header>
-
-          <div className="p-6 max-w-2xl">
+    <AdminLayout title="Payment Options">
+      <div className="p-6 max-w-2xl">
             <Card>
               <CardHeader>
                 <CardTitle>Payment Gateway Configuration</CardTitle>
@@ -152,9 +141,7 @@ const PaymentOption = () => {
               </CardContent>
             </Card>
           </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 

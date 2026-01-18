@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -95,16 +94,9 @@ export default function Country() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <SidebarInset className="flex-1">
-          <div className="flex flex-col gap-6 p-6">
-            <div>
-              <h1 className="text-3xl font-bold">Country Management</h1>
-              <p className="text-muted-foreground">Add and manage countries</p>
-            </div>
-            <Card>
+    <AdminLayout title="Country Management">
+      <div className="flex flex-col gap-6">
+        <Card>
               <CardHeader>
                 <CardTitle>Add New Country</CardTitle>
                 <CardDescription>Create a new country entry</CardDescription>
@@ -160,9 +152,7 @@ export default function Country() {
                 )}
               </CardContent>
             </Card>
-          </div>
-        </SidebarInset>
       </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 }

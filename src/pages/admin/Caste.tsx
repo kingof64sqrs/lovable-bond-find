@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -171,127 +170,117 @@ export default function Caste() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <SidebarInset className="flex-1">
-          <div className="flex flex-col gap-6 p-6">
-            <div>
-              <h1 className="text-3xl font-bold">Caste Management</h1>
-              <p className="text-muted-foreground">Add and manage castes</p>
+    <AdminLayout title="Caste Management">
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Add New Caste</CardTitle>
+            <CardDescription>Create a new caste entry</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="religion">Religion</Label>
+                <Select
+                  value={newCaste.religionId}
+                  onValueChange={(value) => setNewCaste({ ...newCaste, religionId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select religion" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {religions.map((religion) => (
+                      <SelectItem key={religion._additional?.id} value={religion._additional?.id || ''}>
+                        {religion.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="name">Caste Name</Label>
+                <Input
+                  id="name"
+                  value={newCaste.name}
+                  onChange={(e) => setNewCaste({ ...newCaste, name: e.target.value })}
+                  placeholder="Enter caste name"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={newCaste.active}
+                  onCheckedChange={(checked) => setNewCaste({ ...newCaste, active: checked })}
+                />
+                <Label>Active</Label>
+              </div>
+              <Button onClick={handleCreate} className="w-fit">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Caste
+              </Button>
             </div>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Caste</CardTitle>
-                <CardDescription>Create a new caste entry</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="religion">Religion</Label>
-                    <Select
-                      value={newCaste.religionId}
-                      onValueChange={(value) => setNewCaste({ ...newCaste, religionId: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select religion" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {religions.map((religion) => (
-                          <SelectItem key={religion._additional?.id} value={religion._additional?.id || ''}>
-                            {religion.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Caste Name</Label>
-                    <Input
-                      id="name"
-                      value={newCaste.name}
-                      onChange={(e) => setNewCaste({ ...newCaste, name: e.target.value })}
-                      placeholder="Enter caste name"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={newCaste.active}
-                      onCheckedChange={(checked) => setNewCaste({ ...newCaste, active: checked })}
-                    />
-                    <Label>Active</Label>
-                  </div>
-                  <Button onClick={handleCreate} className="w-fit">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Caste
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Castes List ({castes.length})</CardTitle>
-                <CardDescription>Manage existing castes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div>Loading...</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Religion</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {castes.map((caste) => (
-                        <TableRow key={caste._additional?.id}>
-                          <TableCell className="font-medium">{caste.name}</TableCell>
-                          <TableCell>{getReligionName(caste.religionId)}</TableCell>
-                          <TableCell>
-                            <Switch
-                              checked={caste.active}
-                              onCheckedChange={() =>
-                                handleToggleActive(
-                                  caste._additional?.id || '',
-                                  caste.name,
-                                  caste.religionId,
-                                  caste.active
-                                )
-                              }
-                            />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDelete(caste._additional?.id || '')}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {castes.length === 0 && (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center text-muted-foreground">
-                            No castes found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </SidebarInset>
+        <Card>
+          <CardHeader>
+            <CardTitle>Castes List ({castes.length})</CardTitle>
+            <CardDescription>Manage existing castes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Religion</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {castes.map((caste) => (
+                    <TableRow key={caste._additional?.id}>
+                      <TableCell className="font-medium">{caste.name}</TableCell>
+                      <TableCell>{getReligionName(caste.religionId)}</TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={caste.active}
+                          onCheckedChange={() =>
+                            handleToggleActive(
+                              caste._additional?.id || '',
+                              caste.name,
+                              caste.religionId,
+                              caste.active
+                            )
+                          }
+                        />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(caste._additional?.id || '')}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {castes.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        No castes found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 }

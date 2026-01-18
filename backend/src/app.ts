@@ -6,6 +6,8 @@ import { initializeSchemas } from './models/WeaviateModels';
 import adminRoutes from './routes/adminRoutes';
 import referenceDataRoutes from './routes/referenceDataRoutes';
 import userActivityRoutes from './routes/userActivityRoutes';
+import userRoutes from './routes/userRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app: Express = express();
 
@@ -44,6 +46,9 @@ app.get('/api/health', (_req: Request, res: Response) => {
   });
 });
 
+// Authentication routes (public)
+app.use('/api/auth', authRoutes);
+
 // Admin routes
 app.use('/api/admin', adminRoutes);
 
@@ -52,6 +57,9 @@ app.use('/api/reference', referenceDataRoutes);
 
 // User activity routes
 app.use('/api/user-activity', userActivityRoutes);
+
+// User routes (profile, search, matches, etc.)
+app.use('/api', userRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response): void => {

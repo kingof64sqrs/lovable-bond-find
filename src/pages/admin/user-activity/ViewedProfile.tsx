@@ -1,5 +1,4 @@
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -74,11 +73,8 @@ export default function ViewedProfile() {
   );
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <SidebarInset className="flex-1">
-          <div className="p-6">
+    <AdminLayout title="Viewed Profile Records">
+      <div className="p-6">
             <Card>
               <CardHeader>
                 <CardTitle>Viewed Profile Records</CardTitle>
@@ -155,8 +151,6 @@ export default function ViewedProfile() {
               </CardContent>
             </Card>
           </div>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 }

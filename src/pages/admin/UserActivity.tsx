@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
+import AdminLayout from "@/components/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import AdminSidebar from "@/components/AdminSidebar";
 import { Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,19 +32,8 @@ const UserActivity = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-            <div className="flex items-center gap-4 p-4">
-              <SidebarTrigger />
-              <h1 className="text-2xl font-bold">User Activity</h1>
-            </div>
-          </header>
-
-          <div className="p-6">
-            <Card>
+    <AdminLayout title="User Activity">
+      <Card>
               <CardHeader>
                 <CardTitle>Recent Activities</CardTitle>
               </CardHeader>
@@ -80,10 +68,7 @@ const UserActivity = () => {
                 </Table>
               </CardContent>
             </Card>
-          </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    </AdminLayout>
   );
 };
 
