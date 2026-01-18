@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import AdminLayout from "@/components/AdminLayout";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const PaymentOption = () => {
   const { toast } = useToast();
@@ -25,7 +26,7 @@ const PaymentOption = () => {
   const fetchPaymentOptions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/payment-options', {
+      const response = await fetch(`${API_BASE_URL}/admin/payment-options`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -49,7 +50,7 @@ const PaymentOption = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/admin/payment-options', {
+      const response = await fetch(`${API_BASE_URL}/admin/payment-options`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface Religion {
   _additional?: { id: string };
@@ -37,7 +38,7 @@ export default function Caste() {
 
   const fetchReligions = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/reference/religions', {
+      const response = await fetch(`${API_BASE_URL}/reference/religions`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -54,7 +55,7 @@ export default function Caste() {
   const fetchCastes = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/castes', {
+      const response = await fetch(`${API_BASE_URL}/reference/castes`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -85,7 +86,7 @@ export default function Caste() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/reference/castes', {
+      const response = await fetch(`${API_BASE_URL}/reference/castes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ export default function Caste() {
     if (!window.confirm('Are you sure you want to delete this caste?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/castes/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/castes/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -142,7 +143,7 @@ export default function Caste() {
 
   const handleToggleActive = async (id: string, name: string, religionId: string, currentActive: boolean) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/castes/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/castes/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

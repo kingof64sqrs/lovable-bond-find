@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const EmailTemplates = () => {
   const { toast } = useToast();
@@ -20,7 +21,7 @@ const EmailTemplates = () => {
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/email-templates', {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -43,7 +44,7 @@ const EmailTemplates = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/admin/email-templates', {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -65,7 +66,7 @@ const EmailTemplates = () => {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/EmailTemplate/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/EmailTemplate/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

@@ -8,6 +8,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { Search, Eye, Trash2, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { adminAPI } from "@/lib/api";
 
 const Members = () => {
   const { toast } = useToast();
@@ -23,10 +24,7 @@ const Members = () => {
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/members', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      const result = await response.json();
+      const result = await adminAPI.getMembers();
       if (result.success) {
         setMembers(result.data || []);
       }
@@ -39,13 +37,9 @@ const Members = () => {
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this member?')) return;
-    
+
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/members/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      const result = await response.json();
+      const result = await adminAPI.deleteMember(id);
       if (result.success) {
         toast({ title: 'Success', description: 'Member deleted successfully' });
         fetchMembers();

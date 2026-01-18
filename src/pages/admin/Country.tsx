@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface Country {
   _additional?: { id: string };
@@ -29,7 +30,7 @@ export default function Country() {
   const fetchCountries = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/countries', {
+      const response = await fetch(`${API_BASE_URL}/reference/countries`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -47,7 +48,7 @@ export default function Country() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/reference/countries', {
+      const response = await fetch(`${API_BASE_URL}/reference/countries`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(newCountry)
@@ -66,7 +67,7 @@ export default function Country() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/countries/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/countries/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -82,7 +83,7 @@ export default function Country() {
 
   const handleToggleActive = async (id: string, name: string, code: string, currentActive: boolean) => {
     try {
-      await fetch(`http://localhost:3000/api/reference/countries/${id}`, {
+      await fetch(`${API_BASE_URL}/reference/countries/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ name, code, active: !currentActive })

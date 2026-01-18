@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Trash2, Eye, StarOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface ShortlistRecord {
   _additional?: { id: string };
@@ -31,7 +32,7 @@ export default function ShortlistedProfile() {
   const fetchShortlists = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/user-activity/shortlisted-profiles', {
+      const response = await fetch(`${API_BASE_URL}/user-activity/shortlisted-profiles`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -49,7 +50,7 @@ export default function ShortlistedProfile() {
     if (!window.confirm('Are you sure?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/user-activity/shortlisted-profiles/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/user-activity/shortlisted-profiles/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

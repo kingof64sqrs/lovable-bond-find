@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const Advertise = () => {
   const { toast } = useToast();
@@ -19,7 +20,7 @@ const Advertise = () => {
   const fetchAds = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/advertisements', {
+      const response = await fetch(`${API_BASE_URL}/admin/advertisements`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -44,7 +45,7 @@ const Advertise = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/admin/advertisements', {
+      const response = await fetch(`${API_BASE_URL}/admin/advertisements`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -66,7 +67,7 @@ const Advertise = () => {
   const handleDeleteAd = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/Advertisements/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/Advertisements/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

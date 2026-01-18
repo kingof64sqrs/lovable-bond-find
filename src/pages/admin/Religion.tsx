@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { referenceDataAPI } from '@/lib/api';
 
 interface Religion {
   _additional?: { id: string };
@@ -28,12 +29,7 @@ export default function Religion() {
   const fetchReligions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/religions', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const result = await response.json();
+      const result = await referenceDataAPI.getReligions();
       if (result.success) {
         setReligions(result.data);
       }
@@ -59,16 +55,7 @@ export default function Religion() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/reference/religions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(newReligion)
-      });
-
-      const result = await response.json();
+      const result = await referenceDataAPI.createReligion(newReligion);
       if (result.success) {
         toast({
           title: 'Success',
@@ -90,14 +77,7 @@ export default function Religion() {
     if (!window.confirm('Are you sure you want to delete this religion?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/religions/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      const result = await response.json();
+      const result = await referenceDataAPI.deleteReligion(id);
       if (result.success) {
         toast({
           title: 'Success',
@@ -116,16 +96,7 @@ export default function Religion() {
 
   const handleToggleActive = async (id: string, name: string, currentActive: boolean) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/religions/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ name, active: !currentActive })
-      });
-
-      const result = await response.json();
+      const result = await referenceDataAPI.updateReligion(id, { name, active: !currentActive });
       if (result.success) {
         fetchReligions();
       }

@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const UserActivity = () => {
   const { toast } = useToast();
@@ -19,7 +20,7 @@ const UserActivity = () => {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/user-activity', {
+      const response = await fetch(`${API_BASE_URL}/admin/user-activity`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Trash2, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface MessageRecord {
   _additional?: { id: string };
@@ -35,7 +36,7 @@ export default function Message() {
   const fetchMessages = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/user-activity/messages', {
+      const response = await fetch(`${API_BASE_URL}/user-activity/messages`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -53,7 +54,7 @@ export default function Message() {
     if (!window.confirm('Are you sure?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/user-activity/messages/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/user-activity/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

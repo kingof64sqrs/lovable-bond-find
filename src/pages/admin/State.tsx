@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface Country { _additional?: { id: string }; name: string; active: boolean; }
 interface State { _additional?: { id: string }; name: string; countryId: string; active: boolean; }
@@ -24,7 +25,7 @@ export default function State() {
 
   const fetchCountries = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/reference/countries', {
+      const response = await fetch(`${API_BASE_URL}/reference/countries`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -35,7 +36,7 @@ export default function State() {
   const fetchStates = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/states', {
+      const response = await fetch(`${API_BASE_URL}/reference/states`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -51,7 +52,7 @@ export default function State() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/reference/states', {
+      const response = await fetch(`${API_BASE_URL}/reference/states`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(newState)
@@ -70,7 +71,7 @@ export default function State() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/states/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/states/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -86,7 +87,7 @@ export default function State() {
 
   const handleToggleActive = async (id: string, name: string, countryId: string, currentActive: boolean) => {
     try {
-      await fetch(`http://localhost:3000/api/reference/states/${id}`, {
+      await fetch(`${API_BASE_URL}/reference/states/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ name, countryId, active: !currentActive })

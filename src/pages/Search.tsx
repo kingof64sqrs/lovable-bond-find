@@ -88,7 +88,7 @@ const Search = () => {
     }
   };
 
-  const handleConnect = async (profileId: number, profileName: string) => {
+  const handleConnect = async (profileId: number | string, profileName: string) => {
     if (!isAuthenticated) {
       toast({
         title: "Login Required",
@@ -98,9 +98,9 @@ const Search = () => {
       setShowLoginDialog(true);
       return;
     }
-    
+
     try {
-      await userAPI.interestAPI.sendInterest({ profileId });
+      await userAPI.interestAPI.sendInterest(profileId);
       toast({
         title: "Interest Sent!",
         description: `Your interest has been sent to ${profileName}.`,

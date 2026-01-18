@@ -1,6 +1,8 @@
 import client from '../config/weaviate';
 
 export const classes = {
+  USER: 'User',
+  USER_PROFILE: 'UserProfile',
   ADMIN_FORM_DATA: 'AdminFormData',
   SITE_SETTINGS: 'SiteSettings',
   MEMBERS: 'Members',
@@ -60,6 +62,88 @@ export interface ClassDefinition {
 }
 
 const classDefinitions: ClassDefinition[] = [
+  {
+    class: classes.USER,
+    description: 'User authentication and account data',
+    properties: [
+      { name: 'name', dataType: ['string'], description: 'User full name' },
+      { name: 'email', dataType: ['string'], description: 'User email (unique)' },
+      { name: 'passwordHash', dataType: ['string'], description: 'Hashed password' },
+      { name: 'role', dataType: ['string'], description: 'User role (user/admin)' },
+      { name: 'gender', dataType: ['string'], description: 'User gender' },
+      { name: 'profileFor', dataType: ['string'], description: 'Profile created for (self/son/daughter/etc)' },
+      { name: 'profileComplete', dataType: ['boolean'], description: 'Profile completion status' },
+      { name: 'verified', dataType: ['boolean'], description: 'Email verification status' },
+      { name: 'active', dataType: ['boolean'], description: 'Account active status' },
+      { name: 'createdAt', dataType: ['date'], description: 'Account creation date' },
+      { name: 'lastLogin', dataType: ['date'], description: 'Last login timestamp' },
+    ]
+  },
+  {
+    class: classes.USER_PROFILE,
+    description: 'Detailed user profile information',
+    properties: [
+      { name: 'userId', dataType: ['string'], description: 'Reference to User ID' },
+      { name: 'profileId', dataType: ['string'], description: 'Unique profile ID' },
+      // Personal Details
+      { name: 'age', dataType: ['int'], description: 'Age in years' },
+      { name: 'dateOfBirth', dataType: ['date'], description: 'Date of birth' },
+      { name: 'height', dataType: ['string'], description: 'Height' },
+      { name: 'weight', dataType: ['string'], description: 'Weight' },
+      { name: 'maritalStatus', dataType: ['string'], description: 'Marital status' },
+      { name: 'motherTongue', dataType: ['string'], description: 'Mother tongue' },
+      { name: 'physicalStatus', dataType: ['string'], description: 'Physical status' },
+      { name: 'bodyType', dataType: ['string'], description: 'Body type' },
+      { name: 'complexion', dataType: ['string'], description: 'Complexion' },
+      { name: 'eatingHabits', dataType: ['string'], description: 'Eating habits' },
+      { name: 'drinkingHabits', dataType: ['string'], description: 'Drinking habits' },
+      { name: 'smokingHabits', dataType: ['string'], description: 'Smoking habits' },
+      // Religious Details
+      { name: 'religion', dataType: ['string'], description: 'Religion' },
+      { name: 'caste', dataType: ['string'], description: 'Caste' },
+      { name: 'subCaste', dataType: ['string'], description: 'Sub caste' },
+      { name: 'gotra', dataType: ['string'], description: 'Gotra' },
+      { name: 'star', dataType: ['string'], description: 'Star/Nakshatra' },
+      { name: 'rasi', dataType: ['string'], description: 'Rasi/Moon sign' },
+      { name: 'dosh', dataType: ['string'], description: 'Dosh' },
+      // Location Details
+      { name: 'country', dataType: ['string'], description: 'Country' },
+      { name: 'state', dataType: ['string'], description: 'State' },
+      { name: 'city', dataType: ['string'], description: 'City' },
+      { name: 'residencyStatus', dataType: ['string'], description: 'Residency status' },
+      // Education & Career
+      { name: 'education', dataType: ['string'], description: 'Highest education' },
+      { name: 'educationDetail', dataType: ['string'], description: 'Education details' },
+      { name: 'occupation', dataType: ['string'], description: 'Occupation' },
+      { name: 'occupationDetail', dataType: ['string'], description: 'Occupation details' },
+      { name: 'employedIn', dataType: ['string'], description: 'Employed in sector' },
+      { name: 'company', dataType: ['string'], description: 'Company name' },
+      { name: 'annualIncome', dataType: ['string'], description: 'Annual income' },
+      // Family Details
+      { name: 'familyType', dataType: ['string'], description: 'Family type' },
+      { name: 'familyStatus', dataType: ['string'], description: 'Family status' },
+      { name: 'fatherOccupation', dataType: ['string'], description: 'Father occupation' },
+      { name: 'motherOccupation', dataType: ['string'], description: 'Mother occupation' },
+      { name: 'brothers', dataType: ['int'], description: 'Number of brothers' },
+      { name: 'brothersMarried', dataType: ['int'], description: 'Brothers married' },
+      { name: 'sisters', dataType: ['int'], description: 'Number of sisters' },
+      { name: 'sistersMarried', dataType: ['int'], description: 'Sisters married' },
+      { name: 'familyDetails', dataType: ['text'], description: 'Family details' },
+      // About & Preferences
+      { name: 'about', dataType: ['text'], description: 'About me' },
+      { name: 'hobbies', dataType: ['string[]'], description: 'Hobbies and interests' },
+      { name: 'partnerExpectations', dataType: ['text'], description: 'Partner expectations' },
+      // Photos
+      { name: 'profilePhoto', dataType: ['string'], description: 'Profile photo URL' },
+      { name: 'photos', dataType: ['string[]'], description: 'Additional photo URLs' },
+      // Status & Metadata
+      { name: 'profileStatus', dataType: ['string'], description: 'Profile status (active/pending/inactive)' },
+      { name: 'profileViews', dataType: ['int'], description: 'Profile view count' },
+      { name: 'lastActive', dataType: ['date'], description: 'Last active timestamp' },
+      { name: 'createdAt', dataType: ['date'], description: 'Profile creation date' },
+      { name: 'updatedAt', dataType: ['date'], description: 'Profile last update date' },
+    ]
+  },
   {
     class: classes.ADMIN_FORM_DATA,
     description: 'Form submission data',

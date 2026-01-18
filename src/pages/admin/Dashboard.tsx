@@ -9,6 +9,7 @@ import {
   ArrowDownRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/config/api";
 
 const AdminDashboard = () => {
   const [members, setMembers] = useState<any[]>([]);
@@ -26,13 +27,13 @@ const AdminDashboard = () => {
       const token = localStorage.getItem('token');
       
       const [membersRes, approvalsRes, matchesRes] = await Promise.all([
-        fetch('http://localhost:3000/api/admin/members', {
+        fetch(`${API_BASE_URL}/admin/members`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:3000/api/admin/approvals', {
+        fetch(`${API_BASE_URL}/admin/approvals`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:3000/api/admin/matches', {
+        fetch(`${API_BASE_URL}/admin/matches`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);

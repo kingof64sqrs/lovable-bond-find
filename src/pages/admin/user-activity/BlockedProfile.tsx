@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Trash2, Eye, Unlock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface BlockedRecord {
   _additional?: { id: string };
@@ -32,7 +33,7 @@ export default function BlockedProfile() {
   const fetchBlocks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/user-activity/blocked-profiles', {
+      const response = await fetch(`${API_BASE_URL}/user-activity/blocked-profiles`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -50,7 +51,7 @@ export default function BlockedProfile() {
     if (!window.confirm('Are you sure you want to unblock this user?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/user-activity/blocked-profiles/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/user-activity/blocked-profiles/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

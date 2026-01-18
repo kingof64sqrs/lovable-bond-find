@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import * as adminController from '../controllers/adminController';
 import * as siteSettingsController from '../controllers/siteSettingsController';
-import { authenticate } from '../middleware/auth';
+import { authenticate, requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
-// Apply authentication middleware to all admin routes
+// Apply authentication and admin-only middleware to all admin routes
 router.use(authenticate);
+router.use(requireAdmin);
 
 // Form Data Routes
 router.get('/form-data', adminController.getFormData);

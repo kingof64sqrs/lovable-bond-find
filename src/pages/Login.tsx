@@ -23,11 +23,21 @@ const Login = () => {
 
     try {
       await login(email, password);
+      
+      // Get user data to check role
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      
       toast({
         title: "Login successful!",
         description: "Welcome back to Lovable",
       });
-      navigate("/dashboard");
+      
+      // Redirect based on role
+      if (userData.role === 'admin') {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       toast({
         title: "Login failed",

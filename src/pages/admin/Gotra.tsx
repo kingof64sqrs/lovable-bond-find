@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface Gotra {
   _additional?: { id: string };
@@ -28,7 +29,7 @@ export default function Gotra() {
   const fetchGotras = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/gotras', {
+      const response = await fetch(`${API_BASE_URL}/reference/gotras`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -59,7 +60,7 @@ export default function Gotra() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/reference/gotras', {
+      const response = await fetch(`${API_BASE_URL}/reference/gotras`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ export default function Gotra() {
     if (!window.confirm('Are you sure you want to delete this gotra?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/gotras/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/gotras/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -116,7 +117,7 @@ export default function Gotra() {
 
   const handleToggleActive = async (id: string, name: string, currentActive: boolean) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/gotras/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/gotras/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
     email: string;
+    name?: string;
+    role?: string;
   };
 }
 
@@ -26,10 +29,21 @@ export const authenticate = (
       return;
     }
 
-    // Attach user to request for now (in production, verify JWT)
+    // Verify JWT token
+    const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      userId: string;
+      email: string;
+      name?: string;
+      role?: string;
+    };
+
+    // Attach user to request
     req.user = {
-      id: 'admin_user',
-      email: 'admin@lovable.com'
+      id: decoded.userId,
+      email: decoded.email,
+      name: decoded.name,
+      role: decoded.role
     };
 
     next();
@@ -38,8 +52,39 @@ export const authenticate = (
       success: false,
       error: {
         code: 'UNAUTHORIZED',
-        message: 'Invalid authentication token'
+        message: 'Invalid or expired authentication token'
       }
     });
   }
+};
+
+// Admin-only middleware
+export const requireAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (!req.user) {
+    res.status(401).json({
+      success: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required'
+      }
+    });
+    return;
+  }
+
+  if (req.user.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      error: {
+        code: 'FORBIDDEN',
+        message: 'Admin access required'
+      }
+    });
+    return;
+  }
+
+  next();
 };

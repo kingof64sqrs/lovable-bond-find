@@ -1,5 +1,5 @@
 // Frontend User API Service
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://140.238.227.29:3000/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -92,20 +92,20 @@ export const searchAPI = {
 // Interest & Connection APIs
 export const interestAPI = {
   // Send interest to a profile
-  sendInterest: (profileId: string) => apiPost('/interests/send', { profileId }),
-  
+  sendInterest: (profileId: string | number) => apiPost('/interests/send', { profileId: String(profileId) }),
+
   // Get received interests
   getReceivedInterests: () => apiGet('/interests/received'),
-  
+
   // Get sent interests
   getSentInterests: () => apiGet('/interests/sent'),
-  
+
   // Accept interest
   acceptInterest: (interestId: string) => apiPost(`/interests/${interestId}/accept`, {}),
-  
+
   // Decline interest
   declineInterest: (interestId: string) => apiPost(`/interests/${interestId}/decline`, {}),
-  
+
   // Get mutual interests (matches)
   getMutualInterests: () => apiGet('/interests/mutual')
 };

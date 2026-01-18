@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const MembershipPlan = () => {
   const { toast } = useToast();
@@ -19,7 +20,7 @@ const MembershipPlan = () => {
   const fetchPlans = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/membership-plans', {
+      const response = await fetch(`${API_BASE_URL}/admin/membership-plans`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -43,7 +44,7 @@ const MembershipPlan = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/admin/membership-plans', {
+      const response = await fetch(`${API_BASE_URL}/admin/membership-plans`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

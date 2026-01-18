@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface Caste {
   _additional?: { id: string };
@@ -37,7 +38,7 @@ export default function SubCaste() {
 
   const fetchCastes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/reference/castes', {
+      const response = await fetch(`${API_BASE_URL}/reference/castes`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -52,7 +53,7 @@ export default function SubCaste() {
   const fetchSubCastes = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/reference/sub-castes', {
+      const response = await fetch(`${API_BASE_URL}/reference/sub-castes`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -70,7 +71,7 @@ export default function SubCaste() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/api/reference/sub-castes', {
+      const response = await fetch(`${API_BASE_URL}/reference/sub-castes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(newSubCaste)
@@ -89,7 +90,7 @@ export default function SubCaste() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/reference/sub-castes/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/reference/sub-castes/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -105,7 +106,7 @@ export default function SubCaste() {
 
   const handleToggleActive = async (id: string, name: string, casteId: string, currentActive: boolean) => {
     try {
-      await fetch(`http://localhost:3000/api/reference/sub-castes/${id}`, {
+      await fetch(`${API_BASE_URL}/reference/sub-castes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ name, casteId, active: !currentActive })

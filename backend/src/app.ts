@@ -11,21 +11,28 @@ import authRoutes from './routes/authRoutes';
 
 const app: Express = express();
 
-// Initialize Weaviate schemas on startup
-initializeSchemas().catch((err: Error) => {
-  console.error('Weaviate initialization error:', err.message);
-});
+// Initialize Weaviate schemas and create admin user on startup
+import createAdminUser from './scripts/createAdmin';
+import fixUserSchema from './scripts/fixUserSchema';
+
+initializeSchemas()
+  .then(() => fixUserSchema())
+  .then(() => createAdminUser())
+  .catch((err: Error) => {
+    console.error('Initialization error:', err.message);
+  });
 
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - Accept all origins
+// CORS configuration - Allow all origins
 app.use(cors({
-  origin: '*',
-  credentials: false,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
+console.log('✓ CORS enabled for all origins (0.0.0.0)');
 
 // Body parser middleware
 app.use(express.json());

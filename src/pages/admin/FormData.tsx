@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, Download, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const FormData = () => {
   const { toast } = useToast();
@@ -21,7 +22,7 @@ const FormData = () => {
   const fetchFormData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/form-data', {
+      const response = await fetch(`${API_BASE_URL}/admin/form-data`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -39,7 +40,7 @@ const FormData = () => {
     if (!window.confirm('Are you sure?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/AdminFormData/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/AdminFormData/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

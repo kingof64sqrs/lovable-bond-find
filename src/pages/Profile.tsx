@@ -64,7 +64,7 @@ const Profile = () => {
   const handleConnect = async () => {
     if (!profile) return;
     try {
-      await userAPI.interestAPI.sendInterest({ profileId: profile.id });
+      await userAPI.interestAPI.sendInterest(profile.id);
       toast({
         title: "Interest Sent!",
         description: `Your interest has been sent to ${profile.name}.`,

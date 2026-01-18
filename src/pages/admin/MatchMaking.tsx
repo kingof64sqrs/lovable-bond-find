@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/config/api";
 
 const MatchMaking = () => {
   const { toast } = useToast();
@@ -19,7 +20,7 @@ const MatchMaking = () => {
   const fetchMatches = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/admin/matches', {
+      const response = await fetch(`${API_BASE_URL}/admin/matches`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();

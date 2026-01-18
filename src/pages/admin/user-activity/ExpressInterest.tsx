@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Trash2, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface InterestRecord {
   _additional?: { id: string };
@@ -34,7 +35,7 @@ export default function ExpressInterest() {
   const fetchInterests = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/user-activity/express-interests', {
+      const response = await fetch(`${API_BASE_URL}/user-activity/express-interests`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -52,7 +53,7 @@ export default function ExpressInterest() {
     if (!window.confirm('Are you sure you want to delete this record?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/user-activity/express-interests/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/user-activity/express-interests/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

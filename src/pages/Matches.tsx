@@ -58,9 +58,9 @@ const Matches = () => {
     }
   };
 
-  const handleSendInterest = async (profileId: number, name: string) => {
+  const handleSendInterest = async (profileId: number | string, name: string) => {
     try {
-      await userAPI.interestAPI.sendInterest({ profileId });
+      await userAPI.interestAPI.sendInterest(profileId);
       toast({
         title: "Interest Sent!",
         description: `Your interest has been sent to ${name}.`,
@@ -271,7 +271,7 @@ const Matches = () => {
                           <Button
                             size="sm"
                             className="flex-1 gradient-accent gap-1"
-                            onClick={() => handleSendInterest(match.name)}
+                            onClick={() => handleSendInterest(match.id, match.name)}
                           >
                             <Heart className="h-3 w-3" />
                             Connect
@@ -337,7 +337,7 @@ const Matches = () => {
                           <Button
                             size="sm"
                             className="flex-1 gradient-accent gap-1"
-                            onClick={() => handleSendInterest(match.name)}
+                            onClick={() => handleSendInterest(match.id, match.name)}
                           >
                             <Heart className="h-3 w-3" />
                             Connect
@@ -402,7 +402,7 @@ const Matches = () => {
                             <Button
                               size="sm"
                               className="flex-1 gradient-accent gap-1"
-                              onClick={() => handleSendInterest(match.name)}
+                              onClick={() => handleSendInterest(match.id, match.name)}
                             >
                               <Heart className="h-3 w-3" />
                               Connect
@@ -474,7 +474,7 @@ const Matches = () => {
                             <Button
                               size="sm"
                               className="flex-1 gradient-accent gap-1"
-                              onClick={() => handleSendInterest(match.name)}
+                              onClick={() => handleSendInterest(match.id, match.name)}
                             >
                               <Heart className="h-3 w-3" />
                               Connect

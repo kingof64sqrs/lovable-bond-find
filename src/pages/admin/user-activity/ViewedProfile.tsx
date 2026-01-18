@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Trash2, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/config/api';
 
 interface ViewRecord {
   _additional?: { id: string };
@@ -32,7 +33,7 @@ export default function ViewedProfile() {
   const fetchViews = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/user-activity/viewed-profiles', {
+      const response = await fetch(`${API_BASE_URL}/user-activity/viewed-profiles`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const result = await response.json();
@@ -50,7 +51,7 @@ export default function ViewedProfile() {
     if (!window.confirm('Are you sure?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/user-activity/viewed-profiles/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/user-activity/viewed-profiles/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
